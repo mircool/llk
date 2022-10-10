@@ -41,4 +41,10 @@ public:
 	afx_msg void OnBnClickedClearcountdown();
 	afx_msg void OnBnClickedClearonepair();
 	afx_msg void OnBnClickedAutopaly();
+private:
+	CButton m_changesliderspeed;
+	CSliderCtrl m_clickspeed;
+public:
+	afx_msg void OnBnClickedIschangespeed();
+	afx_msg void OnNMReleasedcaptureClickseepd(NMHDR* pNMHDR, LRESULT* pResult);
 };

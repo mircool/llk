@@ -12,6 +12,7 @@
 #define IDC_ClearCountDown              1002
 #define IDC_IschangeSpeed               1003
 #define IDC_SLIDER1                     1004
+#define IDC_ClickSeepd                  1004
 #define IDC_ClearOnePair                1006
 #define IDC_AutoPaly                    1007
 

@@ -10,6 +10,8 @@
 #define new DEBUG_NEW
 #endif
 
+POINT old_pos;
+int Delay_time = 0;
 
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
@@ -58,6 +60,8 @@ void CllkDlg::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_TopWindow, m_topwindow);
 	DDX_Control(pDX, IDC_ClearCountDown, m_clearcountdown);
+	DDX_Control(pDX, IDC_IschangeSpeed, m_changesliderspeed);
+	DDX_Control(pDX, IDC_SLIDER1, m_clickspeed);
 }
 
 BEGIN_MESSAGE_MAP(CllkDlg, CDialogEx)
@@ -69,6 +73,8 @@ BEGIN_MESSAGE_MAP(CllkDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_ClearCountDown, &CllkDlg::OnBnClickedClearcountdown)
 	ON_BN_CLICKED(IDC_ClearOnePair, &CllkDlg::OnBnClickedClearonepair)
 	ON_BN_CLICKED(IDC_AutoPaly, &CllkDlg::OnBnClickedAutopaly)
+	ON_BN_CLICKED(IDC_IschangeSpeed, &CllkDlg::OnBnClickedIschangespeed)
+	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_ClickSeepd, &CllkDlg::OnNMReleasedcaptureClickseepd)
 END_MESSAGE_MAP()
 
 
@@ -104,6 +110,9 @@ BOOL CllkDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE); // 设置小图标
 
 	// TODO: 在此添加额外的初始化代码
+	m_clickspeed.SetRange(50, 500);
+	m_clickspeed.SetPos(200);
+	m_clickspeed.EnableWindow(FALSE); //禁用滑块
 
 	return TRUE; // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -189,7 +198,6 @@ BOOL clearOnePair()
 	return FALSE;
 }
 
-POINT old_pos;
 
 void CllkDlg::OnBnClickedAutostart()
 {
@@ -256,4 +264,33 @@ void CllkDlg::OnBnClickedAutopaly()
 		clearOnePair();
 		chess_num = cat->ReadInt(process_hwnd, (LPVOID)0x00184DC4, 4);
 	}
+}
+
+//速度调节开关
+void CllkDlg::OnBnClickedIschangespeed()
+{
+	if (m_changesliderspeed.GetCheck())
+	{
+		m_clickspeed.EnableWindow(TRUE);
+	}
+	else
+	{
+		m_clickspeed.EnableWindow(FALSE);
+	}
+}
+
+
+void CllkDlg::OnNMReleasedcaptureClickseepd(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	UpdateData(TRUE);
+	init();
+	Delay_time = m_clickspeed.GetPos();
+	int chess_num = cat->ReadInt(process_hwnd, (LPVOID)0x00184DC4, 4);
+	while (chess_num)
+	{
+		clearOnePair();
+		cat->Delay(550 - Delay_time);
+		chess_num = cat->ReadInt(process_hwnd, (LPVOID)0x00184DC4, 4);
+	}
+	*pResult = 0;
 }
