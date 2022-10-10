@@ -67,6 +67,8 @@ BEGIN_MESSAGE_MAP(CllkDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_AutoStart, &CllkDlg::OnBnClickedAutostart)
 	ON_BN_CLICKED(IDC_TopWindow, &CllkDlg::OnBnClickedTopwindow)
 	ON_BN_CLICKED(IDC_ClearCountDown, &CllkDlg::OnBnClickedClearcountdown)
+	ON_BN_CLICKED(IDC_ClearOnePair, &CllkDlg::OnBnClickedClearonepair)
+	ON_BN_CLICKED(IDC_AutoPaly, &CllkDlg::OnBnClickedAutopaly)
 END_MESSAGE_MAP()
 
 
@@ -156,6 +158,37 @@ HCURSOR CllkDlg::OnQueryDragIcon()
 }
 
 //------------------------------------------------------
+//消除一对棋子
+BOOL clearOnePair()
+{
+	init();
+	//遍历第一个棋子
+	for (int x1 = 0; x1 < 11; x1++)
+	{
+		for (int y1 = 0; y1 < 19; y1++)
+		{
+			//遍历第二个棋子
+			for (int x2 = x1; x2 < 11; x2++)
+			{
+				for (int y2 = 0; y2 < 19; y2++)
+				{
+					if (chess_data[x1][y1] > 0 && chess_data[x2][y2] > 0 && (chess_data[x1][y1] == chess_data[x2][y2])
+						&& (!(x1 == x2 && y1 == y2)))
+					{
+						p1.x = x1;
+						p1.y = y1;
+						p2.x = x2;
+						p2.y = y2;
+						//判断两个点是否满足消除要求
+						clickTwoPoints(p1, p2);
+					}
+				}
+			}
+		}
+	}
+	return FALSE;
+}
+
 POINT old_pos;
 
 void CllkDlg::OnBnClickedAutostart()
@@ -201,5 +234,26 @@ void CllkDlg::OnBnClickedClearcountdown()
 	else
 	{
 		cat->KillTimer(COUNT_DOWN_TIME_ID);
+	}
+}
+
+
+void CllkDlg::OnBnClickedClearonepair()
+{
+	//保存当前鼠标位置
+	cat->GetCursorPos(&old_pos);
+	clearOnePair();
+	cat->MoveTo(old_pos.x, old_pos.y);
+}
+
+//自动挂机	剩余棋子数量00184DC4
+void CllkDlg::OnBnClickedAutopaly()
+{
+	init();
+	int chess_num = cat->ReadInt(process_hwnd, (LPVOID)0x00184DC4, 4);
+	while (chess_num)
+	{
+		clearOnePair();
+		chess_num = cat->ReadInt(process_hwnd, (LPVOID)0x00184DC4, 4);
 	}
 }

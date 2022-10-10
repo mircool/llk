@@ -39,4 +39,6 @@ private:
 	CButton m_clearcountdown;
 public:
 	afx_msg void OnBnClickedClearcountdown();
+	afx_msg void OnBnClickedClearonepair();
+	afx_msg void OnBnClickedAutopaly();
 };
